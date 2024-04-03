@@ -1,8 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-
-//Iris-versicolor - 1
-//Iris-virginica - 0
+import java.util.ArrayList;
 
 public class Perceptron
 {
@@ -11,7 +7,7 @@ public class Perceptron
     private double learningRate;
     double precision;
 
-    private String binaryOneInInput;
+    private static final boolean dynamicLearningRate = true;
 
     Perceptron()
     {
@@ -25,69 +21,47 @@ public class Perceptron
         return net >= 0;
     }
 
-    private void fillRandomWeights()
+    public double[] initialiseWeights(int len)
     {
+        weights = new double[len];
         for (int i = 0; i < weights.length; i++)
             weights[i] = Math.random();
+        return weights;
     }
 
-    public void adjustWeightsFromFile(String fileName, int epochs)
+    public void runEpoch(ArrayList<Case> cases)
     {
-        Logger.log("training on file " + fileName + " for " + epochs + " epochs");
-        for (int epoch = 0; epoch < epochs; epoch++)
+        for (Case c : cases)
         {
-            int v = 0;
-            try
-            {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
-                String line;
-                while ((line = bufferedReader.readLine()) != null)
-                {
-                    String[] splitInput = line.split(",");
-                    if (weights == null)
-                    {
-                        weights = new double[splitInput.length - 1];
-                        fillRandomWeights();
-                        binaryOneInInput = splitInput[splitInput.length - 1];
-                    }
-
-                    double[] attributes = new double[splitInput.length - 1];
-                    int value = getBinaryValue(splitInput[splitInput.length - 1]);
-
-                    for (int i = 0; i < splitInput.length - 1; i++)
-                        attributes[i] = Double.parseDouble(splitInput[i].trim());
-
-                    Logger.log("");
-                    adjustWeightsForVector(attributes, value, v);
-                    v++;
-                }
-
-            } catch (Exception ex)
-            {
-                throw new RuntimeException(ex);
-            }
+            Logger.logForEachVector(c.getVector());
+            adjustWeightsForCase(c);
         }
     }
 
-    private int getBinaryValue(String value)
+    private void adjustWeightsForCase(Case c)
     {
-        return value.equals(binaryOneInInput) ? 1 : 0;
-    }
-
-    private void adjustWeightsForVector(double[] x, int value, int i)
-    {
-        Logger.log("\n" + i + ". adjustWeightsForVector:");
+        double[] x = c.getVector();
+        int value = c.getValue();
 
         double helpingFactor = this.learningRate * (value - predictOutput(x));
-        Logger.log("helpingFactor: " + helpingFactor);
-
         this.weights = addTwoVectors(this.weights, multiplyVectorByValue(x, helpingFactor));
-        Logger.log("weights");
-        Logger.log(weights);
-
         this.bias -= helpingFactor;
-        Logger.log("bias");
-        Logger.log(bias + "");
+
+        Logger.logForEachVector("helpingFactor: " + helpingFactor);
+        Logger.logForEachVector("weights");
+        Logger.logForEachVector(weights);
+        Logger.logForEachVector("bias");
+        Logger.logForEachVector(bias + "");
+    }
+
+    public void setLearningRate(int epochs)
+    {
+        if (dynamicLearningRate)
+        {
+            learningRate = Math.min(2. / epochs, 0.01);
+            Logger.log("learning rate set to " + learningRate);
+        } else
+            Logger.log("learning rate was not changed");
     }
 
     private int predictOutput(double[] x)
@@ -98,22 +72,25 @@ public class Perceptron
 
     private double[] multiplyVectorByValue(double[] v, double value)
     {
+        double[] res = new double[v.length];
         for (int i = 0; i < v.length; i++)
-            v[i] *= value;
-        return v;
+            res[i] = v[i] * value;
+        return res;
     }
 
-    private double[] addTwoVectors(double v1[], double[] v2)
+    private double[] addTwoVectors(double[] v1, double[] v2)
     {
         if (v1.length != v2.length)
         {
-            Logger.log("findDotProduct: Wrong number of arguments in vectors.");
+            Logger.log("addTwoVectors: Wrong number of arguments in vectors.");
             return new double[0];
         }
 
+        double[] res = new double[v1.length];
         for (int i = 0; i < v1.length; i++)
-            v1[i] += v2[i];
-        return v1;
+            res[i] = v1[i] + v2[i];
+
+        return res;
     }
 
     private double findDotProduct(double[] v1)
@@ -136,33 +113,33 @@ public class Perceptron
         return sum;
     }
 
-    public double testFromFile(String fileName)
+    public double test(ArrayList<Case> cases)
     {
         int correct = 0;
-        int all = 0;
-        try
+        int all = cases.size();
+
+        for (Case c : cases)
         {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
-            String line;
-            while ((line = bufferedReader.readLine()) != null)
-            {
-                String[] split = line.split(",");
-                double[] attributes = new double[split.length - 1];
-                int value = getBinaryValue(split[split.length - 1]);
-
-                for (int i = 0; i < split.length - 1; i++)
-                    attributes[i] = Double.parseDouble(split[i].trim());
-
-                if (predictOutput(attributes) == value)
-                    correct++;
-                all++;
-            }
-
-        } catch (Exception e)
-        {
-            throw new RuntimeException(e);
+            if (predictOutput(c.getVector()) == c.getValue())
+                correct++;
         }
         Logger.log("tested: " + correct + "/" + all);
         return ((double) (correct)) / all;
+    }
+
+    public double[] getWeights()
+    {
+        return weights;
+    }
+
+    public void setWeights(double[] weights)
+    {
+        this.weights = weights;
+    }
+
+    public double[] initialise(int length, int epochs)
+    {
+        setLearningRate(epochs);
+        return initialiseWeights(length);
     }
 }
