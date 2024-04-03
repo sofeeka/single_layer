@@ -1,19 +1,20 @@
 import org.knowm.xchart.*;
 import org.knowm.xchart.style.lines.SeriesLines;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Main
 {
-//    public static String trainDataFileName = "perceptron.data";
-//    public static String testDataFileName = "perceptron.test.data";
-    public static final String trainDataFileName = "wdbc.data";
-    public static final String testDataFileName = "wdbc.test.data";
+    public static String trainDataFileName = "perceptron.data";
+    public static String testDataFileName = "perceptron.test.data";
+//    public static final String trainDataFileName = "wdbc.data";
+//    public static final String testDataFileName = "wdbc.test.data";
 
     public static void main(String[] args)
     {
         Trainer trainer = new Trainer(new CaseLoader_File(trainDataFileName));
-        trainer.trainPerceptron(new Perceptron(), 1000, 0.97);
+//        trainer.trainPerceptron(new Perceptron(), 1000, 0.97);
 //        buildGraph(trainer);
         buildGraph2(trainer);
     }
@@ -39,7 +40,8 @@ public class Main
         new SwingWrapper<>(chart).displayChart();
     }
 
-    private static void buildGraph2(Trainer trainer) {
+    private static void buildGraph2(Trainer trainer)
+    {
         XYChart chart = new XYChartBuilder()
                 .width(800)
                 .height(600)
@@ -53,13 +55,24 @@ public class Main
 
 //        Stroke[] lineStyles = {SeriesLines.SOLID, SeriesLines.SOLID, SeriesLines.SOLID, SeriesLines.SOLID, SeriesLines.SOLID};
 
-        for (int j = 0; j < 3; j++) {
+        ArrayList<Case> testCases = new CaseLoader_File(testDataFileName).loadCases();
+        for (int j = 0; j < 3; j++)
+        {
             HashMap<Integer, Double> chartMap = new HashMap<>();
+            Perceptron perceptron = new Perceptron();
+            trainer.trainPerceptron(perceptron, 1, 0.97);
+            Logger.log("");
+
             for (int i = 1; i < 10; i++)
             {
-                Perceptron perceptron = new Perceptron();
-                trainer.trainPerceptron(perceptron, i * 100, 0.97);
-                chartMap.put(i, perceptron.test(trainer.getLoader().loadCases(trainDataFileName)));
+                Perceptron copy = new Perceptron(perceptron);
+                double trainAccuracy = trainer.trainPerceptron(copy, i * 100, 0.97);
+                Logger.log("trainAccuracy: " + trainAccuracy);
+
+                double testAccuracy = copy.test(testCases);
+                Logger.log("testAccuracy: " + testAccuracy + "\n");
+
+                chartMap.put(i, trainAccuracy);
             }
             chart.addSeries("Run " + (j + 1), chartMap.keySet().stream().mapToDouble(Integer::doubleValue).toArray(),
                             chartMap.values().stream().mapToDouble(Double::doubleValue).toArray())

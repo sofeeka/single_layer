@@ -5,41 +5,31 @@ public class Trainer
     private final CaseLoader caseLoader;
     private final ArrayList<Case> cases;
 
-    public Trainer(CaseLoader_File caseLoaderFile)
+    public Trainer(CaseLoader caseLoader)
     {
-        this.caseLoader = caseLoaderFile;
-        cases = caseLoader.loadCases();
+        this.caseLoader = caseLoader;
+        cases = this.caseLoader.loadCases();
     }
 
     public double trainPerceptron(Perceptron perceptron, int epochs, double desiredPrecision)
     {
         Logger.log("training from " + caseLoader.getSource() + " for " + epochs + " epochs");
+        perceptron.setLen(cases.get(0).getVector().length);
+        perceptron.setLearningRate(epochs);
+
         double precision = 0;
-        double[] bestPrecisionWeights = perceptron.initialise(cases.get(0).getVector().length, epochs);
 
         for (int i = 0; i < epochs; i++)
         {
             perceptron.runEpoch(cases);
-            double newPrecision = perceptron.test(cases);
+            precision = perceptron.test(cases);
 
-            if(newPrecision > desiredPrecision)
+            if (precision > desiredPrecision)
             {
-                Logger.log("returned on epoch " + i + "/" + epochs + " with precision " + newPrecision);
-                return newPrecision;
-            }
-            if (newPrecision > precision)
-            {
-                bestPrecisionWeights = perceptron.getWeights();
-                precision = newPrecision;
+                Logger.log("returned on epoch " + i + "/" + epochs + " with precision " + precision);
+                break;
             }
         }
-
-        perceptron.setWeights(bestPrecisionWeights);
         return precision;
-    }
-
-    public CaseLoader_File getLoader()
-    {
-        return (CaseLoader_File) caseLoader;
     }
 }

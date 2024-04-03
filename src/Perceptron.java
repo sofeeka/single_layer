@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Perceptron
 {
@@ -16,17 +17,17 @@ public class Perceptron
         precision = 0;
     }
 
+    Perceptron(Perceptron perceptron)
+    {
+        this.weights = Arrays.copyOf(perceptron.weights, perceptron.weights.length);
+        this.bias = perceptron.bias;
+        this.learningRate = perceptron.learningRate;
+        this.precision = perceptron.precision;
+    }
+
     private boolean isActivated(double net)
     {
         return net >= 0;
-    }
-
-    public double[] initialiseWeights(int len)
-    {
-        weights = new double[len];
-        for (int i = 0; i < weights.length; i++)
-            weights[i] = Math.random();
-        return weights;
     }
 
     public void runEpoch(ArrayList<Case> cases)
@@ -123,7 +124,6 @@ public class Perceptron
             if (predictOutput(c.getVector()) == c.getValue())
                 correct++;
         }
-        Logger.log("tested: " + correct + "/" + all);
         return ((double) (correct)) / all;
     }
 
@@ -137,9 +137,29 @@ public class Perceptron
         this.weights = weights;
     }
 
-    public double[] initialise(int length, int epochs)
+    public double getBias()
     {
-        setLearningRate(epochs);
-        return initialiseWeights(length);
+        return bias;
     }
+
+    public double getLearningRate()
+    {
+        return learningRate;
+    }
+
+    public double getPrecision()
+    {
+        return precision;
+    }
+
+    public void setLen(int len)
+    {
+        if (weights == null)
+        {
+            weights = new double[len];
+            for (int i = 0; i < weights.length; i++)
+                weights[i] = Math.random();
+        }
+    }
+
 }
