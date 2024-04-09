@@ -1,6 +1,6 @@
 public class Logger
 {
-    public static boolean logging = true;
+    public static boolean logging = false;
     public static boolean loggingForEachVector = false;
 
     public static void log(String msg)
@@ -13,8 +13,8 @@ public class Logger
     {
         if (logging)
         {
-            for (int i = 0; i < vector.length; i++)
-                System.out.print(vector[i] + " ");
+            for (double v : vector)
+                System.out.print(v + " ");
             System.out.println();
         }
     }
@@ -29,8 +29,8 @@ public class Logger
     {
         if (loggingForEachVector)
         {
-            for (int i = 0; i < vector.length; i++)
-                System.out.print(vector[i] + " ");
+            for (double v : vector)
+                System.out.print(v + " ");
             System.out.println();
         }
     }

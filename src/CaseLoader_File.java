@@ -21,7 +21,6 @@ public class CaseLoader_File implements CaseLoader
     public ArrayList<Case> loadCases()
     {
         Logger.log("loading cases from file " + fileName);
-        String binaryOne = "";
         ArrayList<Case> cases = new ArrayList<>();
         try
         {
@@ -30,13 +29,9 @@ public class CaseLoader_File implements CaseLoader
             while ((line = bufferedReader.readLine()) != null)
             {
                 String[] splitInput = line.split(",");
-                if(binaryOne.isEmpty())
-                    binaryOne = splitInput[splitInput.length -1];
 
-                int valueIndex = splitInput.length - 1;
-                int value = splitInput[valueIndex].equals(binaryOne) ? 1 : 0; // 1 or 0
-
-                double[] attributes = new double[valueIndex];
+                String value = splitInput[splitInput.length - 1];
+                double[] attributes = new double[splitInput.length - 1];
 
                 for (int i = 0; i < splitInput.length - 1; i++)
                     attributes[i] = Double.parseDouble(splitInput[i].trim());

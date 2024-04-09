@@ -1,20 +1,23 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Random;
 
 public class Perceptron
 {
     private double[] weights;
     private double bias;
     private double learningRate;
-    double precision;
+    private ArrayList<String> values;
 
     private static final boolean dynamicLearningRate = true;
+    private static final boolean skipWorseEpochs = false;
+    public static final Random random = new Random(1);
 
     Perceptron()
     {
-        bias = Math.random();
+        bias = random.nextDouble(1);
         learningRate = 0.01;
-        precision = 0;
     }
 
     Perceptron(Perceptron perceptron)
@@ -22,12 +25,32 @@ public class Perceptron
         this.weights = Arrays.copyOf(perceptron.weights, perceptron.weights.length);
         this.bias = perceptron.bias;
         this.learningRate = perceptron.learningRate;
-        this.precision = perceptron.precision;
+        this.values = perceptron.values;
     }
 
     private boolean isActivated(double net)
     {
         return net >= 0;
+    }
+
+    public void runEpochs(ArrayList<Case> cases, int epochs)
+    {
+        double bestAccuracy = this.test(cases);
+        double[] bestWeights = Arrays.copyOf(this.weights, this.weights.length);
+
+        for (int i = 0; i < epochs; i++)
+        {
+            runEpoch(cases);
+
+            if (skipWorseEpochs)
+            {
+                double newAccuracy = this.test(cases);
+                if (newAccuracy < bestAccuracy)
+                {
+                    this.weights = bestWeights;
+                }
+            }
+        }
     }
 
     public void runEpoch(ArrayList<Case> cases)
@@ -37,14 +60,21 @@ public class Perceptron
             Logger.logForEachVector(c.getVector());
             adjustWeightsForCase(c);
         }
+        decreaseLearningRate();
+        Logger.log("weights: ");
+        Logger.log(this.weights);
     }
 
     private void adjustWeightsForCase(Case c)
     {
         double[] x = c.getVector();
-        int value = c.getValue();
+        String value = c.getValue();
+        String predictedValue = predictOutput(x);
 
-        double helpingFactor = this.learningRate * (value - predictOutput(x));
+        Logger.logForEachVector("expected: " + value + "\t" + getBinaryValue(value));
+        Logger.logForEachVector("got     : " + predictedValue + "\t" + getBinaryValue(predictedValue));
+
+        double helpingFactor = this.learningRate * (getBinaryValue(value) - getBinaryValue(predictedValue));
         this.weights = addTwoVectors(this.weights, multiplyVectorByValue(x, helpingFactor));
         this.bias -= helpingFactor;
 
@@ -52,23 +82,35 @@ public class Perceptron
         Logger.logForEachVector("weights");
         Logger.logForEachVector(weights);
         Logger.logForEachVector("bias");
-        Logger.logForEachVector(bias + "");
+        Logger.logForEachVector(bias + "\n");
     }
 
     public void setLearningRate(int epochs)
     {
         if (dynamicLearningRate)
         {
-            learningRate = Math.min(2. / epochs, 0.01);
+//            learningRate = Math.min(.1 / epochs, 0.01);
             Logger.log("learning rate set to " + learningRate);
         } else
             Logger.log("learning rate was not changed");
     }
 
-    private int predictOutput(double[] x)
+    public void decreaseLearningRate()
+    {
+        if (dynamicLearningRate)
+            learningRate *= 0.999;
+    }
+
+    private int getBinaryValue(String s)
+    {
+        return s.equals(values.get(0)) ? 0 : 1;
+    }
+
+    private String predictOutput(double[] x)
     {
         double net = findDotProduct(x) - bias;
-        return isActivated(net) ? 1 : 0;
+        Logger.logForEachVector("net: " + net);
+        return isActivated(net) ? values.get(1) : values.get(0);
     }
 
     private double[] multiplyVectorByValue(double[] v, double value)
@@ -121,10 +163,10 @@ public class Perceptron
 
         for (Case c : cases)
         {
-            if (predictOutput(c.getVector()) == c.getValue())
+            if (predictOutput(c.getVector()).equals(c.getValue()))
                 correct++;
         }
-        return ((double) (correct)) / all;
+        return ((double) correct) / all;
     }
 
     public double[] getWeights()
@@ -147,19 +189,18 @@ public class Perceptron
         return learningRate;
     }
 
-    public double getPrecision()
-    {
-        return precision;
-    }
-
     public void setLen(int len)
     {
-        if (weights == null)
+        if (weights == null || weights.length == 0)
         {
             weights = new double[len];
             for (int i = 0; i < weights.length; i++)
-                weights[i] = Math.random();
+                weights[i] = random.nextDouble(2) - 1;
         }
     }
 
+    public void setValues(HashSet<String> values)
+    {
+        this.values = new ArrayList<>(values);
+    }
 }

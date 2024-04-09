@@ -1,9 +1,9 @@
 public class Case
 {
     private final double[] vector;
-    private final int value;
+    private final String value;
 
-    public Case(double[] vector, int value)
+    public Case(double[] vector, String value)
     {
         this.vector = vector;
         this.value = value;
@@ -14,7 +14,7 @@ public class Case
         return vector;
     }
 
-    public int getValue()
+    public String getValue()
     {
         return value;
     }

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Trainer
 {
@@ -11,25 +12,41 @@ public class Trainer
         cases = this.caseLoader.loadCases();
     }
 
+    public HashSet<String> getValues()
+    {
+        HashSet<String> set = new HashSet<>();
+        for(Case c : cases)
+            set.add(c.getValue());
+        return set;
+    }
+
     public double trainPerceptron(Perceptron perceptron, int epochs, double desiredPrecision)
     {
         Logger.log("training from " + caseLoader.getSource() + " for " + epochs + " epochs");
+
         perceptron.setLen(cases.get(0).getVector().length);
         perceptron.setLearningRate(epochs);
+        perceptron.setValues(getValues());
 
         double precision = 0;
 
-        for (int i = 0; i < epochs; i++)
+        for (int e = 0; e < epochs; e++)
         {
+            Logger.log("epoch: " + e);
             perceptron.runEpoch(cases);
             precision = perceptron.test(cases);
 
             if (precision > desiredPrecision)
             {
-                Logger.log("returned on epoch " + i + "/" + epochs + " with precision " + precision);
+                Logger.log("returned on epoch " + e + "/" + epochs + " with precision " + precision);
                 break;
             }
         }
         return precision;
+    }
+
+    public int getVectorLen()
+    {
+        return this.cases.get(0).getVector().length;
     }
 }
