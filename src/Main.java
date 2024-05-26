@@ -15,8 +15,15 @@ public class Main
         SingleLayerNetwork singleLayerNetwork = new SingleLayerNetwork();
         trainer.trainNetwork(singleLayerNetwork, 1000, 0.999);
 
+        testSingleLayerNetwork(singleLayerNetwork);
+        buildGraph(trainer);
+    }
+
+    private static void testSingleLayerNetwork(SingleLayerNetwork singleLayerNetwork)
+    {
         ArrayList<Case> testCases = new CaseLoader_File(testDataFileName).loadCases();
         ArrayList<Case> trainCases = new CaseLoader_File(trainDataFileName).loadCases();
+        Logger.logEmpty();
 
         double precision = 0;
 
@@ -33,7 +40,6 @@ public class Main
 
         Logger.log("testEachPerceptron on train cases: ");
         testEachPerceptron(singleLayerNetwork, trainCases);
-//        buildGraph(trainer);
     }
 
     private static void testEachPerceptron(SingleLayerNetwork singleLayerNetwork, ArrayList<Case> cases)
@@ -63,10 +69,9 @@ public class Main
         ArrayList<Case> testCases = new CaseLoader_File(trainDataFileName).loadCases();
         for (int j = 0; j < 3; j++)
         {
-            Perceptron perceptron = new Perceptron();
-
-            perceptron.setLen(trainer.getVectorLen());
-            perceptron.setValue("English");
+            SingleLayerNetwork singleLayerNetwork = new SingleLayerNetwork();
+            trainer.initialisePerceptrons(singleLayerNetwork);
+            trainer.trainNetwork(singleLayerNetwork, 1, 0.97);
 
             ArrayList<Integer> chartEpochs = new ArrayList<>();
             ArrayList<Double> chartAccuracies = new ArrayList<>();
@@ -76,12 +81,12 @@ public class Main
             {
                 chartEpochs.add(i);
 
-                double testAccuracy = perceptron.test(testCases);
+                double testAccuracy = singleLayerNetwork.test(testCases);
                 chartAccuracies.add(testAccuracy);
 
-                perceptron.runEpochs(testCases, step);
-
+                singleLayerNetwork.runEpochs(testCases, step);
             }
+
             chart.addSeries("Run " + (j + 1), chartEpochs, chartAccuracies)
                     .setLineStyle(SeriesLines.SOLID);
         }

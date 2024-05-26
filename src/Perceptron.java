@@ -174,9 +174,11 @@ public class Perceptron
             String predicted = predictOutput(c.getVector());
             String trainedFor = this.value;
 
-            if (expected.equals(trainedFor) && expected.equals(predicted))
+            // was supposed to activate and activated
+            if (expected.equals(trainedFor) && predicted.equals(expected))
                 correct++;
 
+            // was not supposed to activate and dit not activate
             if (!expected.equals(trainedFor) && !predicted.equals(trainedFor))
                 correct++;
         }

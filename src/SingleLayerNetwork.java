@@ -54,4 +54,9 @@ public class SingleLayerNetwork
         this.perceptrons.add(perceptron);
     }
 
+    public void runEpochs(ArrayList<Case> testCases, int step)
+    {
+        for(Perceptron perceptron:perceptrons)
+            perceptron.runEpochs(testCases, step);
+    }
 }

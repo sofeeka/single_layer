@@ -53,7 +53,15 @@ public class Trainer
 
     public void trainNetwork(SingleLayerNetwork singleLayerNetwork, int epochs, double desiredPrecision)
     {
-        //create n perceptrons
+        initialisePerceptrons(singleLayerNetwork);
+
+        for (Perceptron perceptron : singleLayerNetwork.getPerceptrons())
+            trainPerceptron(perceptron, epochs, desiredPrecision);
+        Logger.logEmpty();
+    }
+
+    public void initialisePerceptrons(SingleLayerNetwork singleLayerNetwork)
+    {
         for (String value : getValues())
         {
             Logger.log("new perceptron value: " + value);
@@ -62,10 +70,6 @@ public class Trainer
             singleLayerNetwork.addPerceptron(perceptron);
         }
 
-        Logger.logEmpty();
-        //train each one
-        for (Perceptron perceptron : singleLayerNetwork.getPerceptrons())
-            trainPerceptron(perceptron, epochs, desiredPrecision);
         Logger.logEmpty();
     }
 }
