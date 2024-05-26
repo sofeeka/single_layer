@@ -1,12 +1,19 @@
 public class Logger
 {
     public static boolean logging = true;
+    public static boolean loggingEmpty = true;
     public static boolean loggingForEachVector = false;
 
     public static void log(String msg)
     {
         if (logging)
             System.out.println(msg);
+    }
+
+    public static void logEmpty()
+    {
+        if (loggingEmpty)
+            System.out.println();
     }
 
     public static void log(double[] vector)

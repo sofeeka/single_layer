@@ -15,17 +15,19 @@ public class Main
         SingleLayerNetwork singleLayerNetwork = new SingleLayerNetwork();
         trainer.trainNetwork(singleLayerNetwork, 1000, 0.97);
 
-        testEachPerceptron(singleLayerNetwork);
+        testEachPerceptron(singleLayerNetwork, new CaseLoader_File(testDataFileName).loadCases());
+        testEachPerceptron(singleLayerNetwork, new CaseLoader_File(trainDataFileName).loadCases());
 //        buildGraph(trainer);
     }
 
-    private static void testEachPerceptron(SingleLayerNetwork singleLayerNetwork)
+    private static void testEachPerceptron(SingleLayerNetwork singleLayerNetwork, ArrayList<Case> cases)
     {
         for(Perceptron perceptron : singleLayerNetwork.getPerceptrons())
         {
-            double precision = perceptron.test(new CaseLoader_File(testDataFileName).loadCases());
+            double precision = perceptron.test(cases);
             Logger.log("Perceptron " + perceptron.getValue() + "-> precision: " + precision );
         }
+        Logger.logEmpty();
     }
 
     private static void buildGraph(Trainer trainer)

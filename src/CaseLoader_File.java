@@ -22,6 +22,7 @@ public class CaseLoader_File implements CaseLoader
     public ArrayList<Case> loadCases()
     {
         Logger.log("loading cases from file " + fileName);
+        Logger.logEmpty();
         ArrayList<Case> cases = new ArrayList<>();
         try
         {
