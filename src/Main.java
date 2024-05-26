@@ -6,21 +6,26 @@ import java.util.Scanner;
 
 public class Main
 {
-//    public static String trainDataFileName = "perceptron.data";
-//    public static String testDataFileName = "perceptron.test.data";
-    public static final String trainDataFileName = "wdbc.data";
-    public static final String testDataFileName = "wdbc.test.data";
+    public static final String trainDataFileName = "lang.train.csv";
+    public static final String testDataFileName = "lang.test.csv";
 
     public static void main(String[] args)
     {
         Trainer trainer = new Trainer(new CaseLoader_File(trainDataFileName));
-        Perceptron perceptron = new Perceptron();
-        trainer.trainPerceptron(perceptron, 1000, 0.97);
-        double precision = perceptron.test(new CaseLoader_File(testDataFileName).loadCases());
-        Logger.log(precision + "");
+        SingleLayerNetwork singleLayerNetwork = new SingleLayerNetwork();
+        trainer.trainNetwork(singleLayerNetwork, 1000, 0.97);
 
-        buildGraph(trainer);
-        testUserVector(perceptron);
+        testEachPerceptron(singleLayerNetwork);
+//        buildGraph(trainer);
+    }
+
+    private static void testEachPerceptron(SingleLayerNetwork singleLayerNetwork)
+    {
+        for(Perceptron perceptron : singleLayerNetwork.getPerceptrons())
+        {
+            double precision = perceptron.test(new CaseLoader_File(testDataFileName).loadCases());
+            Logger.log("Perceptron " + perceptron.getValue() + "-> precision: " + precision );
+        }
     }
 
     private static void buildGraph(Trainer trainer)
@@ -43,7 +48,7 @@ public class Main
             Perceptron perceptron = new Perceptron();
 
             perceptron.setLen(trainer.getVectorLen());
-            perceptron.setValues(trainer.getValues());
+            perceptron.setValue("English");
 
             ArrayList<Integer> chartEpochs = new ArrayList<>();
             ArrayList<Double> chartAccuracies = new ArrayList<>();
@@ -85,5 +90,4 @@ public class Main
         cases.add(new Case(attributes, ""));
         perceptron.test(cases);
     }
-
 }

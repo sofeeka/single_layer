@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NAI_Perceptron.iml" filepath="$PROJECT_DIR$/NAI_Perceptron.iml" />
+      <module fileurl="file://$PROJECT_DIR$/NAI_SingleLayer.iml" filepath="$PROJECT_DIR$/NAI_SingleLayer.iml" />
     </modules>
   </component>
 </project>

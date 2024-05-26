@@ -1,6 +1,6 @@
 public class Logger
 {
-    public static boolean logging = false;
+    public static boolean logging = true;
     public static boolean loggingForEachVector = false;
 
     public static void log(String msg)

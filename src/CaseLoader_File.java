@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class CaseLoader_File implements CaseLoader
 {
+    private static final int ALPHABET_SIZE = 26;
     private String fileName;
 
     CaseLoader_File(String fileName)
@@ -28,13 +29,12 @@ public class CaseLoader_File implements CaseLoader
             String line;
             while ((line = bufferedReader.readLine()) != null)
             {
-                String[] splitInput = line.split(",");
+                String[] splitInput = line.split(",", 2);
 
-                String value = splitInput[splitInput.length - 1];
-                double[] attributes = new double[splitInput.length - 1];
+                String value = splitInput[0];
 
-                for (int i = 0; i < splitInput.length - 1; i++)
-                    attributes[i] = Double.parseDouble(splitInput[i].trim());
+                String text = splitInput[1];
+                double[] attributes = getLetterCountFromText(text);
 
                 cases.add(new Case(attributes, value));
             }
@@ -44,6 +44,33 @@ public class CaseLoader_File implements CaseLoader
             throw new RuntimeException(ex);
         }
         return cases;
+    }
+
+    private double[] getLetterCountFromText(String text)
+    {
+        double[] vector = new double[ALPHABET_SIZE];
+        text = text.toLowerCase();
+        for (char c : text.toCharArray())
+        {
+            if (c >= 'a' && c <= 'z')
+            {
+                vector[c - 'a']++;
+            }
+        }
+        return normalizeVector(vector);
+    }
+
+    private double[] normalizeVector(double[] vector)
+    {
+        double sum = 0.0;
+        for (double value : vector)
+            sum += value * value;
+
+        double len = Math.sqrt(sum);
+        for (int i = 0; i < vector.length; i++)
+            vector[i] = vector[i] / len;
+
+        return vector;
     }
 
     @Override

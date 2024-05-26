@@ -15,7 +15,7 @@ public class Trainer
     public HashSet<String> getValues()
     {
         HashSet<String> set = new HashSet<>();
-        for(Case c : cases)
+        for (Case c : cases)
             set.add(c.getValue());
         return set;
     }
@@ -26,7 +26,7 @@ public class Trainer
 
         perceptron.setLen(cases.get(0).getVector().length);
         perceptron.setLearningRate(epochs);
-        perceptron.setValues(getValues());
+//        perceptron.setValues(getValues());
 
         double precision = 0;
 
@@ -48,5 +48,21 @@ public class Trainer
     public int getVectorLen()
     {
         return this.cases.get(0).getVector().length;
+    }
+
+    public void trainNetwork(SingleLayerNetwork singleLayerNetwork, int epochs, double desiredPrecision)
+    {
+        //create n perceptrons
+        for (String value : getValues())
+        {
+            Logger.log("new perceptron value: " + value);
+            Perceptron perceptron = new Perceptron();
+            perceptron.setValue(value);
+            singleLayerNetwork.addPerceptron(perceptron);
+        }
+
+        //train each one
+        for(Perceptron perceptron : singleLayerNetwork.getPerceptrons())
+            trainPerceptron(perceptron, epochs, desiredPrecision);
     }
 }

@@ -8,7 +8,7 @@ public class Perceptron
     private double[] weights;
     private double bias;
     private double learningRate;
-    private ArrayList<String> values;
+    private String value;
 
     private static final boolean dynamicLearningRate = true;
     private static final boolean skipWorseEpochs = false;
@@ -25,7 +25,7 @@ public class Perceptron
         this.weights = Arrays.copyOf(perceptron.weights, perceptron.weights.length);
         this.bias = perceptron.bias;
         this.learningRate = perceptron.learningRate;
-        this.values = perceptron.values;
+        this.value = perceptron.value;
     }
 
     private boolean isActivated(double net)
@@ -61,8 +61,8 @@ public class Perceptron
             adjustWeightsForCase(c);
         }
         decreaseLearningRate();
-        Logger.log("weights: ");
-        Logger.log(this.weights);
+        Logger.logForEachVector("weights: ");
+        Logger.logForEachVector(this.weights);
     }
 
     private void adjustWeightsForCase(Case c)
@@ -103,14 +103,16 @@ public class Perceptron
 
     private int getBinaryValue(String s)
     {
-        return s.equals(values.get(0)) ? 0 : 1;
+        //todo
+        return s.equals(value) ? 1 : 0;
     }
 
     private String predictOutput(double[] x)
     {
+        //todo
         double net = findDotProduct(x) - bias;
         Logger.logForEachVector("net: " + net);
-        return isActivated(net) ? values.get(1) : values.get(0);
+        return isActivated(net) ? value : "404";
     }
 
     private double[] multiplyVectorByValue(double[] v, double value)
@@ -163,7 +165,14 @@ public class Perceptron
 
         for (Case c : cases)
         {
-            if (predictOutput(c.getVector()).equals(c.getValue()))
+            String expected = c.getValue();
+            String predicted = predictOutput(c.getVector());
+            String trainedFor = this.value;
+
+            if (expected.equals(trainedFor) && expected.equals(predicted))
+                correct++;
+
+            if (!expected.equals(trainedFor) && !predicted.equals(trainedFor))
                 correct++;
         }
         return ((double) correct) / all;
@@ -199,8 +208,13 @@ public class Perceptron
         }
     }
 
-    public void setValues(HashSet<String> values)
+    public void setValue(String value)
     {
-        this.values = new ArrayList<>(values);
+        this.value = value;
+    }
+
+    public String getValue()
+    {
+        return this.value;
     }
 }
