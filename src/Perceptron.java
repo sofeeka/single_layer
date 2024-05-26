@@ -110,9 +110,14 @@ public class Perceptron
     private String predictOutput(double[] x)
     {
         //todo
-        double net = findDotProduct(x) - bias;
+        double net = calculateNet(x);
         Logger.logForEachVector("net: " + net);
         return isActivated(net) ? value : "404";
+    }
+
+    public double calculateNet(double[] x)
+    {
+        return findDotProduct(x) - bias;
     }
 
     private double[] multiplyVectorByValue(double[] v, double value)

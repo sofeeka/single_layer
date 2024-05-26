@@ -1,3 +1,4 @@
+import java.security.KeyPair;
 import java.util.ArrayList;
 
 public class SingleLayerNetwork
@@ -11,7 +12,31 @@ public class SingleLayerNetwork
 
     public double test(ArrayList<Case> cases)
     {
-        return 0;
+        double correct = 0;
+        double all = cases.size();
+
+        for (Case c : cases)
+            if (predictValue(c.getVector()).equals(c.getValue()))
+                correct++;
+
+        return correct / all;
+    }
+
+    private String predictValue(double[] vector)
+    {
+        double net = 0;
+        String value = "";
+
+        for (Perceptron perceptron : perceptrons)
+        {
+            double newNet = perceptron.calculateNet(vector);
+            if ( newNet > net)
+            {
+                net = newNet;
+                value = perceptron.getValue();
+            }
+        }
+        return value;
     }
 
     public ArrayList<Perceptron> getPerceptrons()

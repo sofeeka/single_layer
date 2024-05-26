@@ -13,10 +13,26 @@ public class Main
     {
         Trainer trainer = new Trainer(new CaseLoader_File(trainDataFileName));
         SingleLayerNetwork singleLayerNetwork = new SingleLayerNetwork();
-        trainer.trainNetwork(singleLayerNetwork, 1000, 0.97);
+        trainer.trainNetwork(singleLayerNetwork, 1000, 0.999);
 
-        testEachPerceptron(singleLayerNetwork, new CaseLoader_File(testDataFileName).loadCases());
-        testEachPerceptron(singleLayerNetwork, new CaseLoader_File(trainDataFileName).loadCases());
+        ArrayList<Case> testCases = new CaseLoader_File(testDataFileName).loadCases();
+        ArrayList<Case> trainCases = new CaseLoader_File(trainDataFileName).loadCases();
+
+        double precision = 0;
+
+        precision = singleLayerNetwork.test(testCases);
+        Logger.log("test set precision: " + precision);
+
+        precision = singleLayerNetwork.test(trainCases);
+        Logger.log("train set precision: " + precision);
+
+        Logger.logEmpty();
+
+        Logger.log("testEachPerceptron on test cases: ");
+        testEachPerceptron(singleLayerNetwork, testCases);
+
+        Logger.log("testEachPerceptron on train cases: ");
+        testEachPerceptron(singleLayerNetwork, trainCases);
 //        buildGraph(trainer);
     }
 
