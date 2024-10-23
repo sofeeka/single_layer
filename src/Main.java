@@ -54,10 +54,13 @@ public class Main
 
     private static void buildGraph(Trainer trainer)
     {
+        Logger.logging = false;
+        Logger.loggingEmpty = false;
+
         XYChart chart = new XYChartBuilder()
                 .width(800)
                 .height(600)
-                .title("Perceptron Accuracy vs. Epochs")
+                .title("Single Layer Accuracy vs. Epochs")
                 .xAxisTitle("Epochs")
                 .yAxisTitle("Accuracy")
                 .build();
@@ -65,8 +68,8 @@ public class Main
         chart.getStyler().setYAxisDecimalPattern("#.##");
         chart.getStyler().setXAxisLabelRotation(45);
 
-//        ArrayList<Case> testCases = new CaseLoader_File(testDataFileName).loadCases();
-        ArrayList<Case> testCases = new CaseLoader_File(trainDataFileName).loadCases();
+        ArrayList<Case> testCases = new CaseLoader_File(testDataFileName).loadCases();
+//        ArrayList<Case> testCases = new CaseLoader_File(trainDataFileName).loadCases();
         for (int j = 0; j < 3; j++)
         {
             SingleLayerNetwork singleLayerNetwork = new SingleLayerNetwork();
@@ -76,7 +79,7 @@ public class Main
             ArrayList<Integer> chartEpochs = new ArrayList<>();
             ArrayList<Double> chartAccuracies = new ArrayList<>();
 
-            int step = 25;
+            int step = 5;
             for (int i = 0; i < 20 * step; i += step)
             {
                 chartEpochs.add(i);
@@ -92,25 +95,5 @@ public class Main
         }
 
         new SwingWrapper<>(chart).displayChart();
-    }
-
-    private static void testUserVector(Perceptron perceptron)
-    {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter training epochs");
-        int epochs = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Input your vector");
-        String vector = scanner.nextLine();
-
-        ArrayList<Case> cases = new ArrayList<>();
-        String[] split = vector.split(",");
-        double[] attributes = new double[split.length];
-
-        for (int i = 0; i < split.length; i++)
-            attributes[i] = Double.parseDouble(split[i].trim());
-
-        cases.add(new Case(attributes, ""));
-        perceptron.test(cases);
     }
 }

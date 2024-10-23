@@ -12,7 +12,7 @@ public class Perceptron
 
     private static final boolean dynamicLearningRate = true;
     private static final boolean skipWorseEpochs = false;
-    public static final Random random = new Random(1);
+    public static final Random random = new Random(15);
 
     Perceptron()
     {

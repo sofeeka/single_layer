@@ -50,13 +50,11 @@ public class CaseLoader_File implements CaseLoader
     {
         double[] vector = new double[ALPHABET_SIZE];
         text = text.toLowerCase();
+
         for (char c : text.toCharArray())
-        {
             if (c >= 'a' && c <= 'z')
-            {
                 vector[c - 'a']++;
-            }
-        }
+
         return normalizeVector(vector);
     }
 
